@@ -1,0 +1,12 @@
+# This is the configuration file for the Freifunk Berlin
+# bbb-vpn using tunneldigger.
+
+# Do not listen on the outside interface and tun devices
+except-interface=<%= @interface %>
+except-interface=<%= @mesh_interface %>
+except-interface=tun-udp
+except-interface=tun-tcp
+dhcp-range=<%= @dhcp_range %>
+dhcp-option=3
+dhcp-lease-max=<%= @dhcp_lease_max %>
+

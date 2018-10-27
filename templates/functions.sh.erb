@@ -1,0 +1,55 @@
+ensure_policy()
+{
+  ip rule del $*
+  ip rule add $*
+}
+
+ensure_bridge()
+{
+  local brname="$1"
+  brctl addbr $brname 2>/dev/null
+  
+  if [[ "$?" == "0" ]]; then
+    # Bridge did not exist before, we have to initialize it
+    ip link set dev $brname up
+    ip addr add <%= @bridge_address %> dev $brname
+    # Disable forwarding between bridge ports
+    ebtables -A FORWARD --logical-in $brname -j DROP
+  fi
+}
+
+add_iptable () {
+  local table=$1
+  local chain=$2
+  shift; shift
+  local rule="$@"
+
+  iptables -t ${table} -C ${chain} ${rule} > /dev/null 2>&1
+  if [ $? -eq 1 ] ; then
+#    echo "Adding Rule \"${rule}\""
+    iptables -t ${table} -A ${chain} ${rule}
+#  else
+#    echo "Rule Exists \"${rule}\""
+  fi
+}
+
+
+ensure_iptables() {
+
+  iptables -t nat -P PREROUTING ACCEPT
+  iptables -t filter -P FORWARD ACCEPT
+
+  add_iptable mangle PREROUTING "-i digger+ -j MARK --set-mark 42"
+  add_iptable nat POSTROUTING "-m mark --mark 42 -j SNAT --to <%= @address %>"
+  add_iptable filter FORWARD "-o <%= @interface %> -d 10.0.0.0/8 -j REJECT --reject-with icmp-net-prohibited"
+  add_iptable filter FORWARD "-o <%= @interface %> -d 172.16.0.0/12 -j REJECT --reject-with icmp-net-prohibited"
+  add_iptable filter FORWARD "-o <%= @interface %> -d 192.168.0.0/16 -j REJECT --reject-with icmp-net-prohibited"
+  add_iptable filter FORWARD "-o <%= @interface %> -d 169.254.0.0/16  -j REJECT --reject-with icmp-net-prohibited"
+  add_iptable filter FORWARD "-o <%= @interface %> -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu"
+
+  # Increasing the size of nf_conntrack hash-table so we don't drop packets
+  # because of a full table.
+  SIZE=$(cat /sys/module/nf_conntrack/parameters/hashsize)
+  [ $SIZE -ne 32768 ] && echo 32768 > /sys/module/nf_conntrack/parameters/hashsize
+}
+

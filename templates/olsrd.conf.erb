@@ -1,0 +1,72 @@
+DebugLevel 0
+AllowNoInt yes
+IpVersion 4
+FIBMetric "flat"
+TcRedundancy 2
+LinkQualityAlgorithm "etx_ff"
+Pollrate 0.025
+
+LoadPlugin "/usr/lib/olsrd/olsrd_drophna.so.0.0.0"
+{
+}
+
+LoadPlugin "/usr/lib/olsrd/olsrd_txtinfo.so.1.1"
+{
+	PlParam "accept" "0.0.0.0"
+	PlParam "port" "2006"
+}
+
+LoadPlugin "/usr/lib/olsrd/olsrd_arprefresh.so.0.1"
+{
+}
+
+LoadPlugin "/usr/lib/olsrd/olsrd_nameservice.so.0.4"
+{
+	PlParam "name" "<%= @name %>"
+	PlParam "suffix" ".olsr"
+	PlParam "hosts-file" "/tmp/hosts-olsr"
+	PlParam "services-file" "/var/etc/services.olsr"
+	PlParam "sighup-pid-file" "/var/run/dnsmasq/dnsmasq.pid"
+}
+
+LoadPlugin "/usr/lib/olsrd/olsrd_jsoninfo.so.1.1"
+{
+	PlParam "accept" "0.0.0.0"
+}
+
+LoadPlugin "/usr/lib/olsrd/olsrd_httpinfo.so.0.1"
+{
+	PlParam "Port" "80"
+	PlParam   "Net" "0.0.0.0 0.0.0.0"
+}
+
+#LoadPlugin "/usr/lib/olsrd/olsrd_watchdog.so.0.1"
+#{
+#	PlParam "file" "/var/run/olsrd.watchdog"
+#	PlParam "interval" "30"
+#}
+
+InterfaceDefaults
+{
+	MidValidityTime 500.0
+	TcInterval 2.0
+	HnaValidityTime 125.0
+	HelloValidityTime 125.0
+	TcValidityTime 500.0
+	Ip4Broadcast 255.255.255.255
+	MidInterval 25.0
+	HelloInterval 3.0
+	HnaInterval 10.0
+	Mode "ether"
+}
+
+Interface "<%= @mesh_interface %>"
+{
+	Mode "ether"
+}
+
+Interface "digger1446" "digger1438" "digger1422" "digger1396" "digger1346" "digger1280"
+{
+	Mode "mesh"
+	LinkQualityMult default 0.25
+}
