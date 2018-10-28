@@ -6,6 +6,8 @@ except-interface=<%= @interface %>
 except-interface=<%= @mesh_interface %>
 except-interface=tun-udp
 except-interface=tun-tcp
+resolv-file=/etc/resolv.conf.freifunk
+addn-hosts=/tmp/hosts-olsr
 dhcp-range=<%= @dhcp_range %>
 dhcp-option=3
 dhcp-lease-max=<%= @dhcp_lease_max %>

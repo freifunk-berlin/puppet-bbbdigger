@@ -45,6 +45,11 @@ class bbbdigger(
     content    => template('bbbdigger/dnsmasq.conf.erb'),
     notify     => Service['dnsmasq'],
   }
+  file { '/etc/resolv.conf.freifunk':
+    ensure     => file,
+    content    => template('bbbdigger/resolv.conf.freifunk.erb'),
+    require    => Package[ 'dnsmasq' ],
+  }
   service { 'dnsmasq':
     ensure     => 'running',
     enable     => 'true',
