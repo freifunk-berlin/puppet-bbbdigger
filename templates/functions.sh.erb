@@ -13,6 +13,7 @@ ensure_bridge()
     # Bridge did not exist before, we have to initialize it
     ip link set dev $brname up
     ip addr add <%= @bridge_address %> dev $brname
+    ensure_policy from all iif $brname lookup <%= @namespace %> prio 1000
     # Disable forwarding between bridge ports
     ebtables -A FORWARD --logical-in $brname -j DROP
   fi

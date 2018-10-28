@@ -3,7 +3,7 @@ TUNNEL_ID="$1"
 INTERFACE="$3"
 MTU="$4"
 
-. <%= @install_dir %>/broker/scripts/functions.sh
+. <%= @install_dir %>/broker/scripts/<%= @functions %>
 
 # Set up the firewall
 #ensure_iptables
