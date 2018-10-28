@@ -30,12 +30,15 @@ class bbbdigger(
     systemd             => '1',
   }
 
-  # Install dnsmasq
+  # Install packages need by bbbdigger
   package { [
-    'dnsmasq'
+    'dnsmasq',
+    'libgps21'
   ]:
     ensure => present,
   }
+
+  # set up dnsmasq
   $dhcp_lease_max = $max_tunnels
   file { '/etc/dnsmasq.conf':
     ensure     => file,
@@ -69,7 +72,7 @@ class bbbdigger(
     source     => '/tmp/olsrd-plugins.deb',
     require    => [
       Exec[ 'get-olsrd-plugins.deb' ],
-      Package[ 'olsrd' ],
+      Package[ [ 'olsrd' ], [ 'libgps21' ] ],
     ],
   }
   file { '/etc/olsrd/olsrd.conf':
