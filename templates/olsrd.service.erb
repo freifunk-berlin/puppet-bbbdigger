@@ -1,0 +1,17 @@
+[Unit]
+Description=The OLSR mesh daemon
+After=network.target auditd.service
+
+[Service]
+Type=forking
+Restart=on-failure
+TimeoutSec=5min
+IgnoreSIGPIPE=no
+KillMode=process
+GuessMainPID=no
+RemainAfterExit=yes
+SysVStartPriority=2
+ExecStart=/usr/sbin/olsrd
+
+[Install]
+WantedBy=multi-user.target

@@ -81,9 +81,24 @@ class bbbdigger(
     notify     => Service['olsrd'],
     require    => Package['olsrd'],
   }
+  file { '/etc/systemd/system/olsrd.service':
+    ensure     => file,
+    content    => template('bbbdigger/olsrd.service.erb'),
+    mode       => '755',
+    require    => Package['olsrd'],
+  }
   service { 'olsrd':
     ensure     => 'running',
     enable     => 'true',
+    require    => [ 
+      Package[ ['olsrd'], ['olsrd-plugins'] ],
+      File['/etc/systemd/system/olsrd.service'],
+    ],
+  }
+  file { '/usr/local/bin/neigh.sh':
+    ensure     => file,
+    content    => 'wget -q -O - http://127.0.0.1:2006/neighbours',
+    mode       => '755',
     require    => Package['olsrd'],
   }
 }
