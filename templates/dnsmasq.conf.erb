@@ -6,6 +6,10 @@ except-interface=<%= @interface %>
 except-interface=<%= @mesh_interface %>
 except-interface=tun-udp
 except-interface=tun-tcp
+
+# disable DNS on the server
+port=0
+
 resolv-file=/etc/resolv.conf.freifunk
 addn-hosts=/tmp/hosts-olsr
 dhcp-range=<%= @dhcp_range %>
